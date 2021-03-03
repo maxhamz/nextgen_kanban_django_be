@@ -85,12 +85,17 @@ class TaskList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        print('POSTING NEW TASK')
+        print('this is the request form data')
+        print(request.data)
+        print('\n\n\n this is the request themselves')
+        print(request.headers)
         serializer = TaskSerializer(
             data=request.data,
             context={'request': request}
         )
         if (serializer.is_valid()):
-            serializer.save()
+            serializer.save(owner=self.request.user) # set current user?
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
