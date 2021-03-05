@@ -53,9 +53,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tasks.apps.TasksConfig',
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
+    # project 
+    'tasks.apps.TasksConfig',
+    'accounts.apps.AccountsConfig'
 ]
 
 MIDDLEWARE = [
@@ -150,6 +152,10 @@ STATIC_URL = '/static/'
 REST_FRAMEWORK = {
     # PAGINATION SETTINGS
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
     # END PAGINATION SETTINGS
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
 }
+
