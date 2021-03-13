@@ -102,7 +102,7 @@ DATABASES = {
         'NAME': 'kanban-r',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': '192.168.1.140',
+        'HOST': '192.168.1.120',
         'PORT': '5432',
     }
 }
