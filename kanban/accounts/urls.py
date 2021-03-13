@@ -30,12 +30,12 @@ urlpatterns = format_suffix_patterns([
         name='token_refresh'
     ),
     path(
-        'users/',
+        '',
         views.AccountsList.as_view(),
         name='accounts-list'
     ),
     path(
-        'users/<int:pk>/',
+        '<int:pk>',
         views.AccountsDetail.as_view(),
         name='accounts-detail'
     ),
