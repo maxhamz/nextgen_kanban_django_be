@@ -22,7 +22,7 @@ class TaskModelTest(TestCase):
         )
 
         Task.objects.create(
-            # created=datetime.now(),
+            created=datetime.now(),
             # due_date=models.DateTimeField(
             #     datetime.now() + timedelta(days=2)
             # ),
@@ -46,3 +46,8 @@ class TaskModelTest(TestCase):
         task = Task.objects.get(id=1)
         field_label = task._meta.get_field('owner').verbose_name
         self.assertEqual(field_label, 'owner')
+
+    def test_created_label(self):
+        task = Task.objects.get(id=1)
+        field_label = task._meta.get_field('created').verbose_name
+        self.assertEqual(field_label, 'created')
