@@ -19,7 +19,7 @@ def api_root(request, format=None):
 
 # Create your views here.
 class TaskList(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
         tasks = Task.objects.all()
@@ -48,7 +48,7 @@ class TaskList(APIView):
 
 class TaskDetail(APIView):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
+        permissions.IsAuthenticated,
         IsOwnerOrReadOnly
     ]
 
