@@ -9,6 +9,7 @@ from tasks.models import Task
 from datetime import datetime, timedelta
 
 # client = Client()
+NO_TASKS = 6
 
 
 class TaskListViewTest(APITestCase):
@@ -35,13 +36,11 @@ class TaskListViewTest(APITestCase):
 
         user1.save()
         user2.save()
-        
 
         # create 6 tasks, split between 2 users,
         # user 1 will get odd numbered tasks, while user 2 get even-numbered tasks.
-        no_tasks = 6
 
-        for i in range(no_tasks):
+        for i in range(NO_TASKS):
             Task.objects.create(
                 created=datetime.now(),
                 due_date=(datetime.now() + timedelta(days=2)),
@@ -51,53 +50,70 @@ class TaskListViewTest(APITestCase):
                 owner=user1 if i % 2 == 0 else user2   # pythonsy ternary?
             )
 
-        # client = APIClient(enforce_csrf_checks=False)
-        # url = reverse('token_obtain_pair')
-
-        # # login Response
-        # # loginResponse = client.post(
-        # #     '/accounts/api/token/', {'email': 'dummy1@mail.com', 'password': 'dummypassword'}
-        # # )
-        # loginResponse = self.client.post(
-        #     '/accounts/api/token/', {'username': 'dummyUser1',
-        #                              'password': 'dummypassword'},
-        #     format='json'
-        # )
-        # print("before all, what;s login response")
-        # print(loginResponse)
-
     def test_throw_401_if_not_logged_in(self):
         response = self.client.get(reverse('task-list'))
         # Check that we got error 401
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # def test_lists_all_tasks(self):
-    #     self.client = Client()  # May be you have missed this line
-    #     # login or u'll get slapped with 401!
-    #     login = Client.login(
-    #         self,
-    #         username='dummyUser1',
-    #         password='dummypassword'
-    #     )
-    #     response = self.client.get(reverse('task-list'))
-
-    #     print("LET'S CHECK RESPONSE")
-    #     print(response)
-    #     print(login)
-
     def test_list_all_tasks(self):
-        client = APIClient(enforce_csrf_checks=False)
+        # client = APIClient(enforce_csrf_checks=False)
         url = reverse('token_obtain_pair')
         sampleUser = {
             'username': 'dummyUser1',
             'password': 'dummypassword'
         }
 
-        loginResponse = client.post(
+        loginResponse = self.client.post(
             url,
             data=json.dumps(sampleUser),
             content_type='application/json'
         )
 
-        print("just curisous")
-        print(loginResponse)
+        accessToken = loginResponse.data['access']
+
+        self.assertEqual(loginResponse.status_code, status.HTTP_200_OK)
+
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + accessToken)
+
+        tasksResponse = self.client.get(reverse('task-list'), format='json')
+        # tasksResponseJSON = json.dumps(tasksResponse.data)
+
+        self.assertEqual(tasksResponse.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(tasksResponse.data), NO_TASKS)
+
+    def test_post_a_task(self):
+        # client = APIClient(enforce_csrf_checks=False)
+        url = reverse('token_obtain_pair')
+        sampleUser = {
+            'username': 'dummyUser1',
+            'password': 'dummypassword'
+        }
+
+        loginResponse = self.client.post(
+            url,
+            data=json.dumps(sampleUser),
+            content_type='application/json'
+        )
+
+        accessToken = loginResponse.data['access']
+
+        self.assertEqual(loginResponse.status_code, status.HTTP_200_OK)
+
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + accessToken)
+
+        exampleTaskPost = {
+            'title': 'Test Dummy Task 1',
+            'details': 'Dummy Task Details Goes Here'
+        }
+
+        tasksResponse = self.client.post(
+            reverse('task-list'),
+            data=json.dumps(exampleTaskPost),
+            content_type='application/json'
+        )
+        # tasksResponseJSON = json.dumps(tasksResponse.data)
+
+        self.assertEqual(tasksResponse.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(tasksResponse.data['title'], exampleTaskPost['title'])
+        self.assertEqual(
+            tasksResponse.data['details'], exampleTaskPost['details'])
