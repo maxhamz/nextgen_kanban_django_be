@@ -1,5 +1,6 @@
 from django.db import models
-from datetime import datetime, timedelta
+from datetime import timedelta
+from django.utils import timezone
 # from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
@@ -25,7 +26,7 @@ class Task(models.Model):
         default=TaskStatus.CREATED
     )
     due_date = models.DateTimeField(
-        default=(datetime.now() + timedelta(days=2))
+        default=(timezone.now() + timedelta(days=2))
     )
     owner = models.ForeignKey(
         'auth.User',
