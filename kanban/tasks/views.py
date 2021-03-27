@@ -31,11 +31,6 @@ class TaskList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        print('POSTING NEW TASK')
-        print('this is the request form data')
-        print(request.data)
-        print('\n\n\n this is the request themselves')
-        print(request.headers)
         serializer = TaskSerializer(
             data=request.data,
             context={'request': request}

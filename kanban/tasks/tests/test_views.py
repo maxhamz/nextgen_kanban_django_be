@@ -6,8 +6,8 @@ from rest_framework.test import APITestCase, APIClient  # ,URLPatternsTestCase
 from django.urls import reverse
 from rest_framework import status
 from django.contrib.auth.models import User
-from tasks.models import Task
-from datetime import timedelta #timezone
+from tasks.models import Task, TaskStatus
+from datetime import timedelta  # timezone
 
 # client = Client()
 NO_TASKS = 6
@@ -17,6 +17,7 @@ TEST_USER = {
 }
 CONTENT_TYPE = 'application/json'
 LOGIN_URL = reverse('token_obtain_pair')
+ID_TASK_TEST = 6  # for test put & delete
 
 
 class TaskListViewTest(APITestCase):
@@ -53,7 +54,6 @@ class TaskListViewTest(APITestCase):
                 due_date=(timezone.now() + timedelta(days=2)),
                 title=f'Task {i + 1}',
                 details=f'Task {i + 1} Details',
-                status=Task.TaskStatus['WIP'],
                 owner=user1 if i % 2 == 0 else user2   # pythonsy ternary?
             )
 
@@ -79,7 +79,7 @@ class TaskListViewTest(APITestCase):
         self.test_login()
 
         tasksResponse = self.client.get(reverse('task-list'), format='json')
-        # tasksResponseJSON = json.dumps(tasksResponse.data)
+        # tasksResponseList = list(tasksResponse.data)
 
         self.assertEqual(tasksResponse.status_code, status.HTTP_200_OK)
         self.assertEqual(len(tasksResponse.data), NO_TASKS)
@@ -104,3 +104,50 @@ class TaskListViewTest(APITestCase):
         self.assertEqual(tasksResponse.data['title'], exampleTaskPost['title'])
         self.assertEqual(
             tasksResponse.data['details'], exampleTaskPost['details'])
+
+    def test_get_a_task(self): 
+        self.test_login()
+
+        taskResponse = self.client.get(
+            reverse('task-detail', kwargs={'pk': ID_TASK_TEST}),
+            format='json'
+        )
+
+        self.assertEqual(taskResponse.status_code, status.HTTP_200_OK)
+        self.assertEqual(taskResponse.data['id'], ID_TASK_TEST)
+
+    def test_update_a_task(self):
+        self.test_login()
+        
+        # print("\n\n THIS IS THE TASKSTATUS")
+        # print(TaskStatus.BACKLOG)
+
+        exampleTaskPut = {
+            'title': 'Test Dummy Task 1 UPDATE',
+            'details': 'UPDATING Dummy Task Details Goes Here'
+        }
+
+        taskResponse = self.client.put(
+            reverse('task-detail', kwargs={'pk': ID_TASK_TEST}),
+            data=exampleTaskPut,
+            format='json'
+        )
+        print(taskResponse)
+        print(taskResponse.data)
+
+        self.assertEqual(taskResponse.status_code, status.HTTP_200_OK)
+        self.assertEqual(taskResponse.data['title'], exampleTaskPut['title'])
+        self.assertEqual(taskResponse.data['details'], exampleTaskPut['details'])
+
+    def test_delete_a_task(self):
+        self.test_login()
+        
+        # print("\n\n THIS IS THE TASKSTATUS")
+        # print(TaskStatus.BACKLOG)
+
+        taskResponse = self.client.delete(
+            reverse('task-detail', kwargs={'pk': ID_TASK_TEST}),
+            format='json'
+        )
+
+        self.assertEqual(taskResponse.status_code, status.HTTP_204_NO_CONTENT)

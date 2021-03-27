@@ -27,7 +27,7 @@ class TaskModelTest(TestCase):
             due_date=(datetime.now() + timedelta(days=2)),
             title='Test task 1',
             details='Test details goes here',
-            status=Task.TaskStatus['WIP'],
+            # status=TaskStatus['WIP'],
             owner=user
         )
 

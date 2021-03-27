@@ -11,7 +11,8 @@ class TaskSerializer(serializers.HyperlinkedModelSerializer):  # new one
 
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = ['id', 'url', 'owner', 'created', 'title',
+                  'details', 'status', 'due_date']
 
     def create(self, validated_data):
         return Task.objects.create(**validated_data)
