@@ -1,10 +1,11 @@
 from rest_framework import serializers
+from enumfields.drf.serializers import EnumSupportSerializerMixin
 from tasks.models import Task
 from accounts.serializers import AccountsSerializer
 # from django.contrib.auth.hashers import make_password
 
 
-class TaskSerializer(serializers.HyperlinkedModelSerializer):  # new one
+class TaskSerializer(EnumSupportSerializerMixin, serializers.HyperlinkedModelSerializer):  # new one
     # AFTER USING META
     # owner = serializers.ReadOnlyField(source='owner.username')
     owner = AccountsSerializer(read_only=True)
