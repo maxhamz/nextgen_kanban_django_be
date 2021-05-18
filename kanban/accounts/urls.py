@@ -39,4 +39,9 @@ urlpatterns = format_suffix_patterns([
         views.AccountsDetail.as_view(),
         name='accounts-detail'
     ),
+    path(
+        'logout/',
+        views.LogoutView.as_view(),
+        name='accounts-logout'
+    ),
 ])

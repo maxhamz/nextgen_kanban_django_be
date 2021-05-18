@@ -2,6 +2,8 @@
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model, logout
 # from rest_framework.reverse import reverse
 # from rest_framework.decorators import api_view   # for root
 from accounts.serializers import AccountsSerializer
@@ -62,3 +64,20 @@ class AccountsDetail(APIView):
         user = self.get_user(pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)  # level 2
+
+
+class LogoutView(APIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    # source: https://github.com/egitimplus/medium/blob/part10/auth/views.py
+    def post(self, request, format=None):
+        try:
+            logout(request)
+            data = {'success': 'Sucessfully logged out'}
+
+            return Response(data=data, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+

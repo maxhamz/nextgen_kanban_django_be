@@ -19,7 +19,7 @@ def api_root(request, format=None):
 
 # Create your views here.
 class TaskList(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
         tasks = Task.objects.all()
@@ -31,11 +31,6 @@ class TaskList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        print('POSTING NEW TASK')
-        print('this is the request form data')
-        print(request.data)
-        print('\n\n\n this is the request themselves')
-        print(request.headers)
         serializer = TaskSerializer(
             data=request.data,
             context={'request': request}
@@ -48,7 +43,7 @@ class TaskList(APIView):
 
 class TaskDetail(APIView):
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
+        permissions.IsAuthenticated,
         IsOwnerOrReadOnly
     ]
 
