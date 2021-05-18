@@ -31,7 +31,7 @@ class AccountsSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'tasks', 'owner']
+        fields = ['id', 'username', 'password', 'email', 'tasks', 'owner']
         read_only_fields = ['is_staff', 'is_superuser']
-        write_only_fields = ['password']
+        # write_only_fields = ['password']
         # fields = '__all__'
