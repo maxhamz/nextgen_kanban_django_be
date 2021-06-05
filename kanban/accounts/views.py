@@ -26,8 +26,6 @@ class AccountsList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        print('we are inside register account')
-        print(request.data)
         serializer = AccountsSerializer(
             data=request.data,
             context={'request': request}
